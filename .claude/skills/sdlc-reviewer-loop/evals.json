@@ -1,0 +1,40 @@
+{
+  "skill": "sdlc-reviewer-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "review this diff before I merge it",
+      "expected_behavior": [
+        "sweeps all six axes including security and over-engineering",
+        "gives every finding a file:line and a concrete failing input",
+        "ends with an explicit GO or NO-GO"
+      ],
+      "baseline": "returns generic style comments and no verdict"
+    },
+    {
+      "query": "this float comparison looks fragile to me",
+      "expected_behavior": [
+        "tries to construct an input that produces a wrong result",
+        "drops the candidate when no such input exists, rather than filing it"
+      ],
+      "baseline": "files the hunch as a blocker"
+    },
+    {
+      "query": "the tests pass and the code looks fine to me",
+      "expected_behavior": [
+        "says GO and lists what was checked clean",
+        "does not invent a nitpick to look thorough"
+      ],
+      "baseline": "manufactures a minor objection so the review has content"
+    },
+    {
+      "query": "good catch - go ahead and fix that typo",
+      "expected_behavior": [
+        "refuses to edit source or tests",
+        "leaves the fix to the implementation phase"
+      ],
+      "baseline": "edits the file directly"
+    }
+  ]
+}

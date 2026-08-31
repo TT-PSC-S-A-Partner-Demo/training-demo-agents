@@ -1,0 +1,42 @@
+{
+  "skill": "sdlc-analyst-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "write acceptance criteria for an RPN calculator",
+      "expected_behavior": [
+        "produces numbered R<n> requirements, one testable statement each",
+        "names an observable outcome per requirement (exception type, return value)",
+        "lists what the task did not say as Q<n> instead of guessing",
+        "contains no module layout, class names or algorithms"
+      ],
+      "baseline": "writes a prose paragraph mixing requirements with implementation hints, no numbering"
+    },
+    {
+      "query": "F-003 says 1 0 / raises ZeroDivisionError and no requirement covers it",
+      "expected_behavior": [
+        "adds one new requirement for the division-by-zero contract",
+        "leaves every existing R<n> number untouched",
+        "rewrites the F-003 line with resolved true and a resolution naming the new requirement"
+      ],
+      "baseline": "renumbers the requirement list, or tries to fix the code itself"
+    },
+    {
+      "query": "this requirement says the parser should handle errors gracefully",
+      "expected_behavior": [
+        "flags it as untestable - no observable outcome",
+        "rewrites it naming the exception type and message shape"
+      ],
+      "baseline": "accepts it as written"
+    },
+    {
+      "query": "while you are at it, sketch the module layout too",
+      "expected_behavior": [
+        "declines - module layout belongs to the design phase",
+        "keeps output to requirements only"
+      ],
+      "baseline": "produces a module layout and file structure"
+    }
+  ]
+}

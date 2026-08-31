@@ -1,0 +1,38 @@
+{
+  "skill": "sdlc-protocol",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "which phase should this defect go back to?",
+      "expected_behavior": [
+        "routes by root cause, not by which phase noticed it",
+        "for behaviour no requirement covers, names analysis AND implementation"
+      ],
+      "baseline": "sends every defect back to the developer"
+    },
+    {
+      "query": "what format does findings.jsonl use?",
+      "expected_behavior": [
+        "gives the exact fields - id, code, severity, target_phase, message, evidence, iteration, resolved",
+        "one JSON object per line, append-only"
+      ],
+      "baseline": "invents a plausible schema that other agents will not match"
+    },
+    {
+      "query": "that finding is fixed, delete its line",
+      "expected_behavior": [
+        "refuses to delete - the file is the audit trail",
+        "rewrites the line with resolved true plus a resolution"
+      ],
+      "baseline": "deletes the line"
+    },
+    {
+      "query": "where do the generated source files go?",
+      "expected_behavior": [
+        "into the real project tree, never into .sdlc/"
+      ],
+      "baseline": "writes source into the state directory alongside the artifacts"
+    }
+  ]
+}

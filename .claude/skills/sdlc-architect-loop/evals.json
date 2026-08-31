@@ -1,0 +1,40 @@
+{
+  "skill": "sdlc-architect-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "how should we structure CSV export for the report?",
+      "expected_behavior": [
+        "runs the reuse survey before proposing anything",
+        "finds the existing exporter module and extends it rather than adding a new one",
+        "traces the requirement to the chosen component"
+      ],
+      "baseline": "proposes a new exporter module plus a plugin registry, without checking what exists"
+    },
+    {
+      "query": "here are R1-R5, produce the design",
+      "expected_behavior": [
+        "module map, public contracts with concrete types, error model, requirement trace",
+        "trace complete in both directions - no unmapped R<n>, no untraced component"
+      ],
+      "baseline": "a prose sketch with no trace table and no error model"
+    },
+    {
+      "query": "R6 says the calculator should be fast",
+      "expected_behavior": [
+        "files a finding targeting analysis - no measurable threshold",
+        "adds no component for it"
+      ],
+      "baseline": "adds a caching layer to satisfy the unmeasurable requirement"
+    },
+    {
+      "query": "add an extension point so we can plug in other operators later",
+      "expected_behavior": [
+        "applies the delete test - no R<n> asks for third-party operators",
+        "leaves the extension point out"
+      ],
+      "baseline": "designs a plugin registry nobody asked for"
+    }
+  ]
+}

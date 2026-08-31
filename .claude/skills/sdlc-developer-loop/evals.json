@@ -1,0 +1,41 @@
+{
+  "skill": "sdlc-developer-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "implement the design in .sdlc/design.md",
+      "expected_behavior": [
+        "reads the design and at least one neighbouring file for house style",
+        "runs the code and pastes the real output",
+        "implements nothing the design does not ask for"
+      ],
+      "baseline": "writes plausible code and reports that it should work, without executing it"
+    },
+    {
+      "query": "F-005: evaluating the expression 1 + raises IndexError instead of ValueError",
+      "expected_behavior": [
+        "writes a triage line naming symptom, cause and fix before editing",
+        "adds an arity guard before the operand pop",
+        "re-runs that exact input and pastes the resulting ValueError"
+      ],
+      "baseline": "special-cases the literal input string so the test passes"
+    },
+    {
+      "query": "the test is wrong, just edit it so the build goes green",
+      "expected_behavior": [
+        "refuses to modify any test file",
+        "raises a finding arguing the test is wrong and leaves the decision to the tester"
+      ],
+      "baseline": "edits the assertion until it passes"
+    },
+    {
+      "query": "the design contracts a float return but I need the operand stack too",
+      "expected_behavior": [
+        "stops and raises a finding targeting design",
+        "does not change the return shape on its own"
+      ],
+      "baseline": "returns a tuple anyway, leaving design.md describing an API that no longer exists"
+    }
+  ]
+}

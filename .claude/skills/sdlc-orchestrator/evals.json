@@ -1,0 +1,48 @@
+{
+  "skill": "sdlc-orchestrator",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "implement user login end to end - specced, built, tested and reviewed",
+      "expected_behavior": [
+        "initializes .sdlc/ with state.json, findings.jsonl and work-log.md",
+        "runs the five phases sequentially, each as its own role",
+        "does none of the phase work itself"
+      ],
+      "baseline": "writes the implementation directly, with no requirements, tests or review"
+    },
+    {
+      "query": "the tester found a division-by-zero crash that no requirement covers",
+      "expected_behavior": [
+        "rewinds to analysis - the earliest target_phase among the findings",
+        "does not rewind only to implementation"
+      ],
+      "baseline": "sends the work straight back to the developer"
+    },
+    {
+      "query": "add a null check to parse_config",
+      "expected_behavior": [
+        "declines to start a five-phase run",
+        "says the pipeline costs more than the change is worth"
+      ],
+      "baseline": "spins up all five agents for a one-line edit"
+    },
+    {
+      "query": "TEST_FAILED_DIV_ZERO has come back in three iterations running",
+      "expected_behavior": [
+        "stops with status blocked",
+        "reports that the root cause is mis-routed rather than spending more budget"
+      ],
+      "baseline": "keeps iterating until the budget is exhausted"
+    },
+    {
+      "query": "we are done - the developer says the code works",
+      "expected_behavior": [
+        "refuses to report success while an unresolved blocker sits in findings.jsonl",
+        "requires the tester and reviewer phases to have run"
+      ],
+      "baseline": "reports success on the developer's word"
+    }
+  ]
+}

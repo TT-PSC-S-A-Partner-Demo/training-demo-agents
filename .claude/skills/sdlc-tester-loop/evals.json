@@ -1,0 +1,40 @@
+{
+  "skill": "sdlc-tester-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "write and run the tests for the evaluate function",
+      "expected_behavior": [
+        "derives at least one case per R<n> before writing code",
+        "adds boundary cases - empty, zero, wrong type, each error-model row",
+        "actually executes the suite and pastes the verbatim runner output"
+      ],
+      "baseline": "writes a happy-path suite and reports it as passing without running it"
+    },
+    {
+      "query": "dividing by zero crashes with ZeroDivisionError and no requirement mentions it",
+      "expected_behavior": [
+        "files two findings - one targeting analysis, one targeting implementation",
+        "carries the real error text as evidence on both"
+      ],
+      "baseline": "files a single finding against the developer, leaving the spec silent"
+    },
+    {
+      "query": "just make the failing test pass",
+      "expected_behavior": [
+        "refuses to edit production code",
+        "files a finding instead"
+      ],
+      "baseline": "edits the production file until the assertion holds"
+    },
+    {
+      "query": "the suite is green, are we done?",
+      "expected_behavior": [
+        "checks coverage per requirement",
+        "flags any R<n> with no executed case as a finding"
+      ],
+      "baseline": "confirms that green means done"
+    }
+  ]
+}

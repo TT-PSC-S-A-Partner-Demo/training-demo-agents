@@ -1,0 +1,37 @@
+{
+  "suite": "sdlc-family-activation",
+  "purpose": "Trigger-rate check for the seven sdlc-* skills. Measured once for the whole family rather than per skill, because the real activation risk here is cross-firing between siblings, not whether one skill fires in isolation.",
+  "method": "Run each query cold, with all seven skills installed and none named by the user. Record which skill (if any) loads. A query with expected_skill null must load none of them. Target: >= 90% correct across the 20, and no false fire on the six 'ordinary work' queries.",
+  "targets": {
+    "correct_rate": 0.9,
+    "should_fire_count": 10,
+    "should_not_fire_count": 10
+  },
+  "queries": [
+    {"query": "implement rate limiting end to end - specced, built, tested and reviewed", "expected_skill": "sdlc-orchestrator"},
+    {"query": "run the SDLC team on this ticket", "expected_skill": "sdlc-orchestrator"},
+    {"query": "build this properly, I want it specified and independently reviewed, not hacked in", "expected_skill": "sdlc-orchestrator"},
+    {"query": "write acceptance criteria for the import feature", "expected_skill": "sdlc-analyst-loop"},
+    {"query": "this spec is too vague to test - fix it", "expected_skill": "sdlc-analyst-loop"},
+    {"query": "should I extend the existing exporter or add a new module?", "expected_skill": "sdlc-architect-loop"},
+    {"query": "write and run a test suite for this parser", "expected_skill": "sdlc-tester-loop"},
+    {"query": "is this change actually covered by tests?", "expected_skill": "sdlc-tester-loop"},
+    {"query": "review this diff before I merge it", "expected_skill": "sdlc-reviewer-loop"},
+    {"query": "which phase should this defect go back to?", "expected_skill": "sdlc-protocol"},
+
+    {"query": "add a null check to parse_config", "expected_skill": null, "why": "single-file edit - the five-phase loop costs more than the change"},
+    {"query": "why does this function return None?", "expected_skill": null, "why": "a question about existing code, no work product"},
+    {"query": "what does pytest.approx do?", "expected_skill": null, "why": "library question"},
+    {"query": "rename this variable across the repo", "expected_skill": null, "why": "mechanical refactor"},
+    {"query": "what are our commit message conventions?", "expected_skill": null, "why": "sdlc-protocol is the team's internal wire format, not general conventions"},
+    {"query": "set up CI for this repo", "expected_skill": null, "why": "infrastructure, outside the pipeline"},
+    {"query": "the build is red, what broke?", "expected_skill": null, "why": "diagnosis, not a testing phase"},
+    {"query": "explain this JSON file to me", "expected_skill": null, "why": "must not catch sdlc-protocol on the word format"},
+    {"query": "fix the failing test", "expected_skill": null, "why": "ambiguous ownership - must not auto-load the tester loop, which forbids exactly this"},
+    {"query": "summarize what changed in the last release", "expected_skill": null, "why": "unrelated"}
+  ],
+  "known_risks": [
+    "The five *-loop skills are deliberately reachable mainly through their owning agent. If the should-fire rate for loop queries lands below target, that is acceptable only while every loop keeps its 'Do not use standalone' negative trigger - otherwise the description is simply too narrow.",
+    "'implement X end to end' is the orchestrator's broadest phrase. Watch query 11 specifically: a false fire there means the negative trigger needs strengthening, not the pipeline."
+  ]
+}
