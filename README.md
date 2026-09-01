@@ -1,9 +1,10 @@
-# SDLC Agent Team — 7 ról + orkiestrator + pętle skilli
+# SDLC Agent Team — 7 roles + orchestrator + skill loops
 
-Zespół SDLC do użycia w Claude Code, Codex i Devin. Kanoniczne role oraz skille
-są w `.claude/`, a `.codex/` i `.devin/` zawierają natywne profile lub lekkie
-odnośniki. Każdy agent ma **własną pętlę skilla** — wewnętrzny cykl przebiegów z
-samokrytyką i kryteriami wyjścia. Nad nimi działa orkiestrator z pętlą zwrotną.
+An SDLC team for use in Claude Code, Codex and Devin. The canonical roles and
+skills live in `.claude/`; `.codex/` and `.devin/` hold native profiles or thin
+pointers back to them. Every agent has **its own skill loop** — an internal
+cycle of passes with self-critique and exit criteria. Above them runs the
+orchestrator with its feedback loop.
 
 ```
 analysis -> design -> implementation -> testing -> review -> done
@@ -11,11 +12,11 @@ analysis -> design -> implementation -> testing -> review -> done
     +----------+---- feedback ------------+---------+
 ```
 
-## Struktura
+## Structure
 
 ```
 .claude/
-  agents/                      <- 7 kanonicznych definicji ról
+  agents/                      <- 7 canonical role definitions
     metrics-analyst.md
     parallel-tester.md
     sdlc-analyst.md
@@ -24,157 +25,160 @@ analysis -> design -> implementation -> testing -> review -> done
     sdlc-tester.md
     sdlc-reviewer.md
   skills/
-    sdlc-protocol/             <- wspólny kontrakt (stan, findings, routing)
+    sdlc-protocol/             <- shared contract (state, findings, routing)
     sdlc-orchestrator/         <- manager, /sdlc-orchestrator
-    sdlc-metrics-loop/         <- opcjonalne definicje metryk
-    sdlc-adversarial-loop/     <- opcjonalny drugi tor testów
-    sdlc-analyst-loop/            <- 4 przebiegi
-    sdlc-architect-loop/          <- 5 przebiegów
-    sdlc-developer-loop/          <- 6 przebiegów
-    sdlc-tester-loop/             <- 6 przebiegów
-    sdlc-reviewer-loop/           <- 5 przebiegów
-      SKILL.md + evals.json       <- każdy skill ma własne evals
-evals/activation.json          <- trigger-rate suite dla całej rodziny
+    sdlc-metrics-loop/         <- optional metric definitions
+    sdlc-adversarial-loop/     <- optional second test lane
+    sdlc-analyst-loop/            <- 4 passes
+    sdlc-architect-loop/          <- 5 passes
+    sdlc-developer-loop/          <- 6 passes
+    sdlc-tester-loop/             <- 6 passes
+    sdlc-reviewer-loop/           <- 5 passes
+      SKILL.md + evals.json       <- every skill carries its own evals
+evals/activation.json          <- trigger-rate suite for the whole family
 .codex/
-  config.toml                  <- multi-agent + jawna rejestracja skilli
-  agents/*.toml                <- 7 projektowych custom agents
-  skills/*/SKILL.md            <- odnośniki do kanonicznych skilli
-.devin/                        <- profile i odnośniki dla Devin
-AGENTS.md                      <- instrukcje orkiestracji dla Codex
+  config.toml                  <- multi-agent + explicit skill registration
+  agents/*.toml                <- 7 project-scoped custom agents
+  skills/*/SKILL.md            <- pointers to the canonical skills
+.devin/                        <- profiles and pointers for Devin
+AGENTS.md                      <- orchestration instructions for Codex
 ```
 
 ## Evals
 
-Każdy skill ma `evals.json`: 4-5 scenariuszy, każdy z `query`,
-`expected_behavior` (asercje PASS/FAIL) i `baseline` (co model robi bez skilla).
-Scenariusze celują w hard rules, nie w happy path — np. dla `sdlc-tester-loop`
-*"just make the failing test pass"* ma skończyć się odmową edycji produkcji.
-To ta część, która w ogóle uzasadnia istnienie skilla.
+Every skill has an `evals.json`: 4-5 scenarios, each with a `query`,
+`expected_behavior` (PASS/FAIL assertions) and a `baseline` (what the model does
+without the skill). The scenarios target hard rules, not the happy path — for
+`sdlc-tester-loop`, *"just make the failing test pass"* must end in a refusal to
+edit production code. That is the part that justifies the skill existing at all.
 
-`evals/activation.json` — 20 zapytań (10 fire / 10 no-fire) mierzących
-trigger-rate całej siódemki naraz. Mierzone razem, bo prawdziwe ryzyko to
-przestrzeliwanie między rodzeństwem, nie odpalanie w izolacji. Cel: ≥90%
-trafień i zero false-fire na sześciu zapytaniach o zwykłą robotę.
+`evals/activation.json` — 20 queries (10 fire / 10 no-fire) measuring the
+trigger rate of all seven at once. Measured together, because the real risk is
+overshooting between siblings, not firing in isolation. Target: ≥90% hits and
+zero false fires across the six ordinary-work queries.
 
-## Instalacja
+## Installation
 
-**Per projekt** (zalecane — zespół widzi to w repo):
+**Per project** (recommended — the team sees it in the repo):
 
 ```bash
-cp -r sdlc-agents/.claude/agents/*        <projekt>/.claude/agents/
-cp -r sdlc-agents/.claude/skills/sdlc-*   <projekt>/.claude/skills/
-cp -r sdlc-agents/.codex                   <projekt>/          # Codex
-cp    sdlc-agents/AGENTS.md                <projekt>/          # Codex
+cp -r sdlc-agents/.claude/agents/*        <project>/.claude/agents/
+cp -r sdlc-agents/.claude/skills/sdlc-*   <project>/.claude/skills/
+cp -r sdlc-agents/.codex                   <project>/          # Codex
+cp    sdlc-agents/AGENTS.md                <project>/          # Codex
 ```
 
-**Globalnie** (wszystkie projekty): to samo do `~/.claude/agents/` i
+**Globally** (all projects): the same, into `~/.claude/agents/` and
 `~/.claude/skills/`.
 
-Po instalacji zdecyduj, co z `.sdlc/` w projekcie docelowym — orkiestrator
-zakłada go przy pierwszym uruchomieniu. Wersjonować, jeśli chcesz ślad audytowy
-(kto co zgłosił, w której iteracji, jak rozwiązane). Do `.gitignore`, jeśli
-traktujesz to jako stan roboczy. Domyślnie proponuję **wersjonować** —
-`findings.jsonl` jest append-only właśnie po to, i przy sporze o to, czy coś
-było przetestowane, jest jedynym dowodem.
+After installing, decide what to do with `.sdlc/` in the target project — the
+orchestrator creates it on the first run. Version it if you want an audit trail
+(who reported what, in which iteration, how it was resolved). Add it to
+`.gitignore` if you treat it as working state. My default suggestion is to
+**version it** — `findings.jsonl` is append-only for exactly that reason, and in
+an argument about whether something was tested, it is the only evidence.
 
-`evals/` zostaje w tym repo, nie kopiuj go do projektu docelowego — dotyczy
-samych skilli, nie kodu, który nimi budujesz.
+`evals/` stays in this repo — do not copy it into the target project. It covers
+the skills themselves, not the code you build with them.
 
-Weryfikacja w Codex: profile w `.codex/agents/` obejmują 7 ról, a `/skills`
-pokazuje 9 skilli `sdlc-*`. Projekt musi być oznaczony jako zaufany, aby Codex
-załadował projektowy `.codex/config.toml`.
+Verification in Codex: the profiles in `.codex/agents/` cover 7 roles, and
+`/skills` shows 9 `sdlc-*` skills. The project must be marked as trusted for
+Codex to load the project-scoped `.codex/config.toml`.
 
-## Uruchomienie
+## Running it
 
 Claude Code:
 
 ```text
-/sdlc-orchestrator zaimplementuj kalkulator RPN z jednym wejściem evaluate(expr)
+/sdlc-orchestrator implement an RPN calculator with a single entry point evaluate(expr)
 ```
 
 Codex:
 
 ```text
-$sdlc-orchestrator zaimplementuj kalkulator RPN z jednym wejściem evaluate(expr)
+$sdlc-orchestrator implement an RPN calculator with a single entry point evaluate(expr)
 ```
 
-Orkiestrator zakłada `.sdlc/`, odpala fazy po kolei jako subagentów, zbiera
-findings, przewija do fazy z przyczyną, powtarza do czysta albo do wyczerpania
-budżetu (`max_iterations`, default 6).
+The orchestrator creates `.sdlc/`, runs the phases in order as subagents,
+collects findings, rewinds to the phase owning the root cause, and repeats until
+clean or until the budget runs out (`max_iterations`, default 6).
 
-Pojedynczą rolę też można wywołać osobno, np. sam przegląd:
+A single role can also be invoked on its own, e.g. review only:
 `Use the sdlc-reviewer agent on the current diff`.
 
-## Pętle skilli — po jednej na agenta
+## Skill loops — one per agent
 
-Każda pętla to przebiegi `draft -> samokrytyka -> rewizja` z twardym limitem
-**3 rewizji** i checklistą wyjścia. Limit jest po to, żeby agent nie mielił
-w kółko na koszt budżetu iteracji orkiestratora.
+Each loop is a set of `draft -> self-critique -> revise` passes with a hard limit
+of **3 revisions** and an exit checklist. The limit exists so an agent does not
+grind in circles at the cost of the orchestrator's iteration budget.
 
-| Agent | Przebiegi | Sedno samokrytyki |
+| Agent | Passes | Core of the self-critique |
 |---|---|---|
-| analyst | harvest → draft → testability challenge → revise | czy tester napisze z tego asercję? |
-| architect | reuse survey → draft → simplification → trace → revise | który `R<n>` umrze, jak to usunę? |
-| developer | context → triage → implement → **run** → self-review → revise | przyczyna czy objaw? |
-| tester | derive → boundary sweep → write → **execute** → classify → report | czyj to root cause? |
-| reviewer | scope → 6-osiowy sweep → contract check → **verify** → verdict | czy umiem podać konkretny failure scenario? |
+| analyst | harvest → draft → testability challenge → revise | can the tester write an assertion from this? |
+| architect | reuse survey → draft → simplification → trace → revise | which `R<n>` dies if I remove this? |
+| developer | context → triage → implement → **run** → self-review → revise | root cause or symptom? |
+| tester | derive → boundary sweep → write → **execute** → classify → report | whose root cause is this? |
+| reviewer | scope → 6-axis sweep → contract check → **verify** → verdict | can I name a concrete failure scenario? |
 
-Pogrubione przebiegi są nieusuwalne: developer i tester **naprawdę wykonują**
-kod, reviewer **weryfikuje** każdy kandydat na finding zanim go zgłosi.
+The bolded passes cannot be dropped: the developer and tester **actually
+execute** code, and the reviewer **verifies** every finding candidate before
+reporting it.
 
-## Pętla zwrotna — routing po przyczynie
+## The feedback loop — routing by root cause
 
-Finding niesie `target_phase` = faza, do której należy **naprawa**, nie ta, która
-zauważyła problem.
+A finding carries `target_phase` = the phase that owns the **fix**, not the one
+that noticed the problem.
 
-| Objaw | target_phase |
+| Symptom | target_phase |
 |---|---|
-| zachowanie, którego nikt nie wyspecyfikował | `analysis` |
-| spec jest, struktura go nie unosi | `design` |
-| spec i design OK, kod zły | `implementation` |
-| brak przypadku testowego | `testing` |
+| behavior nobody specified | `analysis` |
+| the spec exists, the structure cannot carry it | `design` |
+| spec and design fine, code wrong | `implementation` |
+| missing test case | `testing` |
 
-Jeden defekt może wymagać **dwóch** findings (brakujące wymaganie + brakujący
-kod). Wysyłanie wszystkiego do developera zamienia pętlę zwrotną w pętlę retry —
-brakujące wymaganie wraca w następnej iteracji.
+One defect may require **two** findings (missing requirement + missing code).
+Sending everything to the developer turns the feedback loop into a retry loop —
+the missing requirement comes back in the next iteration.
 
-Severity: `blocker` zatrzymuje pipeline, `major` zawraca, `minor` tylko loguje.
+Severity: `blocker` stops the pipeline, `major` rewinds, `minor` only logs.
 
-## Stan na dysku
+## State on disk
 
 ```
 .sdlc/
-  state.json        faza, iteracja, budżet, status
+  state.json        phase, iteration, budget, status
   requirements.md   analyst
   design.md         architect
-  test-report.md    tester (z prawdziwym outputem runnera)
+  test-report.md    tester (with real runner output)
   review.md         reviewer (GO / NO-GO)
   findings.jsonl    append-only, audit trail
-  work-log.md       wpis na każdy przebieg agenta
+  work-log.md       one entry per agent pass
 ```
 
-Findings nigdy się nie kasuje — przepisuje na `"resolved": true` z polem
-`"resolution"`. Kod źródłowy idzie do drzewa projektu, nie do `.sdlc/`.
+Findings are never deleted — they are rewritten to `"resolved": true` with a
+`"resolution"` field. Source code goes into the project tree, not into `.sdlc/`.
 
-## Bezpieczniki
+## Safeguards
 
-- Developer nie tyka testów. Tester nie tyka produkcji. Reviewer nie tyka nic.
-- Tester nie raportuje wyniku, którego nie zaobserwował.
-- Ten sam kod findingu w 3 iteracjach z rzędu → `blocked`, stop. Pętla nie
-  zbiega, root cause jest źle zaadresowany.
-- Orkiestrator nie robi żadnej fazy sam — to niszczy niezależność ocen.
+- The developer does not touch tests. The tester does not touch production code.
+  The reviewer touches nothing.
+- The tester does not report a result it did not observe.
+- The same finding code in 3 consecutive iterations → `blocked`, stop. The loop
+  is not converging; the root cause is being addressed wrongly.
+- The orchestrator never performs a phase itself — that destroys the
+  independence of the judgments.
 
 ## Codex
 
-Codex korzysta natywnie z custom agents w `.codex/agents/`. Fazy uruchamia
-sekwencyjnie, z wyjątkiem dwóch niezależnych testerów uruchamianych równolegle.
-Tryb bez subagentów pozostaje wyłącznie fallbackiem dla hostów, które faktycznie
-nie udostępniają delegowania.
+Codex uses the custom agents in `.codex/agents/` natively. It runs the phases
+sequentially, except for the two independent testers, which run in parallel. The
+no-subagent mode remains strictly a fallback for hosts that genuinely do not
+offer delegation.
 
-## Referencyjna implementacja
+## Reference implementation
 
-Ten sam pipeline istnieje też jako deterministyczny program w Pythonie (stdlib,
-`python main.py`) — pokazuje routing findings na sucho, bez LLM. **Nie jest
-częścią tego repo**; leży obok, w katalogu `sdlc-orchestrator/` tej samej
-przestrzeni roboczej. Jeśli klonujesz sam bundle, tego kodu nie dostaniesz i
-niczego nie tracisz — agenci są kompletni bez niego.
+The same pipeline also exists as a deterministic Python program (stdlib,
+`python main.py`) — it shows finding routing dry, without an LLM. **It is not
+part of this repo**; it sits next to it, in the `sdlc-orchestrator/` directory of
+the same workspace. If you clone the bundle alone you will not get that code, and
+you lose nothing — the agents are complete without it.
