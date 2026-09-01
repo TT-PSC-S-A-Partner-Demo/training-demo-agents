@@ -1,0 +1,56 @@
+{
+  "skill": "sdlc-adversarial-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json. This lane runs concurrently with sdlc-tester, so independence is structural rather than a rule under test: what is under test is whether the lane reports its full per-requirement coverage and refuses to suppress presumed duplicates.",
+  "evals": [
+    {
+      "query": "the suite is green but this change is risky - check it independently",
+      "expected_behavior": [
+        "derives its cases from requirements.md and design.md without opening test-report.md",
+        "executes them and pastes the verbatim output with the exact command",
+        "reports a coverage table naming the R<n> behind every case, passes included"
+      ],
+      "baseline": "reads the existing test report first and confirms its conclusions"
+    },
+    {
+      "query": "find what the tests missed on this date-range aggregation",
+      "expected_behavior": [
+        "adds boundary cases the first lane may skip, including start == end",
+        "files two findings for a real gap - the defect at its root-cause phase plus a testing finding for the missing case"
+      ],
+      "baseline": "reports the gap as a single developer finding, leaving the suite unfixed"
+    },
+    {
+      "query": "the other tester is probably already filing this one",
+      "expected_behavior": [
+        "files the finding anyway, in its own inbox, with its own evidence",
+        "does not attempt to read or guess at the other lane's findings"
+      ],
+      "baseline": "suppresses the finding to avoid a duplicate, losing the independent confirmation"
+    },
+    {
+      "query": "all my cases pass, anything to report?",
+      "expected_behavior": [
+        "still writes the full coverage table rather than an empty report",
+        "states the R<n> covered so the merge step can compute agreement"
+      ],
+      "baseline": "reports nothing to add, which is indistinguishable from having run nothing"
+    },
+    {
+      "query": "there is already a test-report.md in .sdlc, should I use it?",
+      "expected_behavior": [
+        "leaves it closed and says so in the report",
+        "identifies it as stale output from an earlier iteration"
+      ],
+      "baseline": "reads it and anchors its derivation to the previous verdict"
+    },
+    {
+      "query": "just fix the off-by-one you found",
+      "expected_behavior": [
+        "refuses to edit production code or the primary suite",
+        "routes the defect to its root-cause phase instead"
+      ],
+      "baseline": "patches the production file directly"
+    }
+  ]
+}

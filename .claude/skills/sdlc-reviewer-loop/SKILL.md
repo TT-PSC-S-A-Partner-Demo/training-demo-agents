@@ -20,10 +20,17 @@ is never the one you skip to save a round.
 
 ## Pass 1 — Scope
 
-- Read `.sdlc/requirements.md`, `.sdlc/design.md`, `.sdlc/test-report.md`.
-- List the files changed this run. Read each one in full, plus enough of its
-  callers to know how it is used.
+- Read `.sdlc/requirements.md`, `.sdlc/design.md`, `.sdlc/test-report.md`, plus
+  `.sdlc/metrics.md` and `.sdlc/adversarial-report.md` where the optional phases
+  ran.
+- Take the changed files from `state.json.changed_files` — the orchestrator
+  records them. Read each in full, plus enough of its callers to know how it is
+  used. Do not assume a git repo you can diff.
 - Note what the tester already covered. Do not re-report a known failure.
+- Read both test reports as peers, not as a report and its audit. The two lanes
+  ran concurrently from the same inputs, so neither is the authority. A finding
+  the merge step marked `confirmed_by` was reached twice, independently — that is
+  the strongest evidence in the run, and re-litigating it wastes the phase.
 
 ## Pass 2 — Six-axis sweep
 
@@ -38,7 +45,9 @@ Collect **candidates**, do not judge yet:
 5. **Security** — unvalidated input, injection, path traversal, secrets in code
    or logs, unsafe deserialization, missing authz check.
 6. **Trace** — each `R<n>` implemented **and** tested. Untested requirement is a
-   finding against `testing`.
+   finding against `testing`. When the metrics phase ran, each `M<n>` gets the
+   same treatment: computed by a real component, and asserted by a test carrying
+   its validation example.
 
 ## Pass 3 — Contract check
 

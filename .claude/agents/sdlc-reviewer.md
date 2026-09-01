@@ -35,7 +35,7 @@ Review the diff produced this run against `.sdlc/design.md` and
 | Over-engineering | abstraction the requirements never asked for, premature generality |
 | Codebase fit | naming, error handling, and idiom that do not match neighbours |
 | Security | injection, unvalidated input, secrets, unsafe deserialization, path traversal |
-| Trace | every `R<n>` actually implemented and actually tested |
+| Trace | every `R<n>` (and every `M<n>`, when the metrics phase ran) actually implemented and actually tested |
 
 ## Hard rules
 

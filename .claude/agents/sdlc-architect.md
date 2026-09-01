@@ -32,7 +32,9 @@ Produce `.sdlc/design.md` covering:
 - **Public contracts** — exact signatures, argument types, return types.
 - **Error model** — which exception type for which class of input problem.
 - **Requirement trace** — every `R<n>` mapped to the component that satisfies it.
-  An unmapped requirement is a hole; say so instead of hiding it.
+  An unmapped requirement is a hole; say so instead of hiding it. When the
+  optional metrics phase ran, `.sdlc/metrics.md` is authoritative too: every
+  `M<n>` traces to the component that computes it.
 
 ## Hard rules
 

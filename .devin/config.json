@@ -1,0 +1,8 @@
+{
+  "subagents_enabled": true,
+  "read_config_from": {
+    "claude": true,
+    "cursor": false,
+    "windsurf": false
+  }
+}

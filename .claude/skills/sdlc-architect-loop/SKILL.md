@@ -20,6 +20,9 @@ Five passes. Repeat 3-5 until exit criteria hold or **3 revisions**, then report
 
 Before proposing anything, find what exists:
 
+- Read `.sdlc/metrics.md` if the metrics phase ran. Every `M<n>` is a contract
+  you must design a component for, exactly as an `R<n>` is — an `M<n>` with no
+  component is a trace gap, not a detail.
 - Glob for modules whose names match the task's nouns.
 - Grep for the operations the requirements describe.
 - Read the two or three closest existing modules end to end. Their shape is your

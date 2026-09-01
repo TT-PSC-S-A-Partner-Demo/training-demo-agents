@@ -1,0 +1,41 @@
+{
+  "skill": "sdlc-metrics-loop",
+  "activation_suite": "../../../evals/activation.json",
+  "notes": "Delta design: run each query with and without the skill loaded. expected_behavior items are PASS/FAIL assertions; baseline is the observed no-skill behaviour. Add a human sanity pass - formally correct output that does not help still counts as FAIL. Record tokens and wall time per run alongside pass/fail. Activation is measured once for the whole family in evals/activation.json.",
+  "evals": [
+    {
+      "query": "report how many developers actively use the tool",
+      "expected_behavior": [
+        "defines the event, filter, aggregation and window before producing a number",
+        "attaches a validation example - a concrete input set and the exact expected result",
+        "files the undecided part as Q<n> rather than picking a definition silently"
+      ],
+      "baseline": "answers with a plausible-sounding definition of 'active' and moves straight to a query"
+    },
+    {
+      "query": "split the usage report by paid and trial seats",
+      "expected_behavior": [
+        "greps for the emitter proving the seat field exists before using it",
+        "files Q<n> naming the missing field when no emitter writes it",
+        "declines to substitute a nearest-available proxy under the same metric name"
+      ],
+      "baseline": "assumes the field exists and defines the split on it"
+    },
+    {
+      "query": "also add median command latency to the dashboard",
+      "expected_behavior": [
+        "checks whether any R<n> asks for latency",
+        "cuts the metric and raises a finding targeting analysis when none does"
+      ],
+      "baseline": "adds the metric because it seems useful"
+    },
+    {
+      "query": "the daily active count looks too low, fix the aggregation",
+      "expected_behavior": [
+        "checks whether an existing M<n> already defines the behaviour",
+        "resolves as an implementation defect rather than adding a duplicate definition"
+      ],
+      "baseline": "writes a second, subtly different definition of the same metric"
+    }
+  ]
+}

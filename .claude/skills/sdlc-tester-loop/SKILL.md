@@ -38,6 +38,9 @@ Add the cases the requirements imply but do not spell out:
 - zero, negative, one, maximum, off-by-one either side of every boundary
 - wrong type, `None`, malformed token
 - every row of the error model in `.sdlc/design.md`
+- when `.sdlc/metrics.md` exists, each metric's **validation example** verbatim:
+  the stated input set must produce the stated number. That example is the metric's
+  acceptance test, and a metric nobody asserted is a number nobody has checked.
 
 Happy-path-only suites are how broken code reaches production with a green tick.
 
@@ -73,6 +76,17 @@ Each finding carries the **real error text** as `evidence`.
 
 ## Pass 6 — Report and check exit
 
+**In a concurrent phase**, findings go to `.sdlc/inbox/sdlc-tester.jsonl`,
+numbered from the id the orchestrator gave you; resolutions and the work-log
+entry are returned as text, not written. `findings.jsonl`, `work-log.md`, and
+`.sdlc/adversarial-report.md` are all off limits while the other lane runs — the
+second opinion is only worth something for as long as neither pass has seen the
+other.
+
+List every case you ran with its `R<n>` and result, passes included. The merge
+step computes the agreement count between the two lanes from that list, and it
+can only compare what you actually stated.
+
 Write `.sdlc/test-report.md`:
 
 ```markdown
@@ -94,7 +108,8 @@ Result: 6 passed, 3 failed
 
 Exit when **all** hold:
 
-- [ ] Every `R<n>` has at least one executed case.
+- [ ] Every `R<n>` has at least one executed case, and the report names the
+      `R<n>` behind every case, passing ones included.
 - [ ] The suite was actually run and the output is pasted, not summarized.
 - [ ] Every failure is classified and routed, with evidence.
 - [ ] No production file was modified.
