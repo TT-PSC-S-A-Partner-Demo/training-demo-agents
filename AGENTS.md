@@ -1,10 +1,11 @@
 # SDLC Agent Team — Codex / portable entry point
 
-This file is the vendor-neutral version of `.claude/skills/sdlc-orchestrator/`.
-Codex reads `AGENTS.md` automatically from the repo root. Copy this file to the
-root of the target project, together with the `.claude/` directory (the role and
-loop definitions are plain markdown — Codex can read them as instruction files
-even though it does not spawn subagents the way Claude Code does).
+This file is the vendor-neutral entry point for
+`.claude/skills/sdlc-orchestrator/`. Codex reads `AGENTS.md` automatically from
+the repo root and uses the project-scoped custom agents in `.codex/agents/`.
+Copy `AGENTS.md`, `.claude/`, and `.codex/` to a target project.
+The canonical role and loop definitions remain under `.claude/`; the Codex
+profiles and skills are lightweight adapters that point back to them.
 
 ## What this is
 
@@ -78,29 +79,24 @@ three revisions, with an explicit exit checklist. Read both — acting on the ro
 file alone gets you the right scope with none of the rigor, which is how a
 review turns into a list of hunches.
 
-## Running without subagent support
+## Codex execution
 
-The procedure lives in `.claude/skills/sdlc-orchestrator/SKILL.md`, section
-`## Running without subagents` — four steps, kept there so installing the skill
-folder alone is enough. Follow it; this file does not keep a second copy.
+Codex uses the seven project-scoped custom agents in `.codex/agents/`. When the
+SDLC orchestrator is invoked, delegate each phase to its matching custom agent;
+the orchestrator must not perform a phase itself. Run phases sequentially except
+for phase 4: when `adversarial` is enabled, spawn `sdlc-tester` and
+`parallel-tester` concurrently and wait for both before the protocol merge.
 
-What that section does not explain is **why** the isolation matters, which is
-the part people skip:
+Use the canonical procedure in
+`.claude/skills/sdlc-orchestrator/SKILL.md`. Invoke it explicitly as
+`$sdlc-orchestrator <task>`, or ask Codex to run the SDLC team. Current Codex
+clients may also select custom agents by name for a single phase.
 
-Claude Code spawns each role as a separate subagent. That separation is not
-ceremony — it is the only thing stopping one context from writing the code,
-judging the code, and approving the code in a single breath. When you simulate
-the roles yourself, nothing enforces the boundary but you.
-
-So the isolation matters most at the tester and reviewer phases. Re-read the
-role file before each of those two even when you are sure you remember it. The
-failure mode is not forgetting the rules; it is remembering them while quietly
-grading your own work against them.
-
-## Codex custom prompt
-
-To get a slash command in Codex, copy the orchestrator skill body into
-`~/.codex/prompts/sdlc.md`, then run `/sdlc <task>`.
+If a host genuinely has no subagent support, use the orchestrator skill's
+`## Running without subagents` fallback. That is a compatibility path, not the
+default Codex path. In fallback mode the tester and reviewer boundaries must be
+re-established exactly as that section describes; the adversarial lane cannot
+be simulated in one context.
 
 ## Do not
 

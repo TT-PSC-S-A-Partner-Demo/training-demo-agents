@@ -99,8 +99,11 @@ failure. Never merge a half-finished concurrent phase — a missing second opini
 reported as agreement is the worst output this pipeline can produce.
 
 **On Claude Code**, launch with the `Agent` tool, `subagent_type` set to the name
-above. **On any other agent**, follow `## Running without subagents` below — the
-tool call is the Claude Code path, not a requirement of this skill.
+above. **On Codex**, spawn the matching project-scoped custom agent from
+`.codex/agents/`; for phase 4, issue both tester spawns without a dependency
+between them and wait for both results before merging. Use
+`## Running without subagents` only when the active host genuinely lacks
+subagent support.
 
 Give the role, in its prompt: the task, the current iteration, the artifact paths
 it needs, the **ids of the unresolved findings targeting its phase**, and the
@@ -186,7 +189,7 @@ Never report success while an unresolved `blocker` sits in `findings.jsonl`.
 
 ## Running without subagents
 
-Where subagents are unavailable (Codex, Cursor, Gemini CLI, plain chat), the
+Where subagents are genuinely unavailable (for example, a plain chat host), the
 pipeline still runs — simulate the isolation instead of spawning it:
 
 1. For each phase, read **only** that role's definition plus its loop skill, then
