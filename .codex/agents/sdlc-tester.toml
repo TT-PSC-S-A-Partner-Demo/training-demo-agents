@@ -1,0 +1,10 @@
+name = "sdlc-tester"
+description = "SDLC testing phase; derives and executes tests without editing production code."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+Read and follow the canonical role definition in `.claude/agents/sdlc-tester.md`.
+Use `.claude/skills/sdlc-tester-loop/SKILL.md` and `.claude/skills/sdlc-protocol/SKILL.md` as the canonical procedures.
+Never edit production code and never report tests that were not executed.
+"""

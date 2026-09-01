@@ -1,0 +1,68 @@
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 8
+
+[agents."sdlc-analyst"]
+description = "SDLC analysis phase; produces numbered, testable requirements only."
+config_file = "agents/sdlc-analyst.toml"
+
+[agents."metrics-analyst"]
+description = "Optional SDLC metrics phase for analytics, telemetry, and KPI tasks."
+config_file = "agents/metrics-analyst.toml"
+
+[agents."sdlc-architect"]
+description = "SDLC design phase; produces the technical design without writing production code."
+config_file = "agents/sdlc-architect.toml"
+
+[agents."sdlc-developer"]
+description = "SDLC implementation phase; implements the approved design without editing tests."
+config_file = "agents/sdlc-developer.toml"
+
+[agents."sdlc-tester"]
+description = "SDLC testing phase; derives and executes tests without editing production code."
+config_file = "agents/sdlc-tester.toml"
+
+[agents."parallel-tester"]
+description = "Independent second testing lane, run concurrently with the primary tester."
+config_file = "agents/parallel-tester.toml"
+
+[agents."sdlc-reviewer"]
+description = "SDLC final review phase; issues GO or NO-GO without editing source or tests."
+config_file = "agents/sdlc-reviewer.toml"
+
+# Register every project skill explicitly so this repository is self-contained.
+[[skills.config]]
+path = "skills/sdlc-protocol"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-orchestrator"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-analyst-loop"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-metrics-loop"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-architect-loop"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-developer-loop"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-tester-loop"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-adversarial-loop"
+enabled = true
+
+[[skills.config]]
+path = "skills/sdlc-reviewer-loop"
+enabled = true

@@ -1,8 +1,9 @@
-# SDLC Agent Team — 5 agentów markdown + orkiestrator + pętle skilli
+# SDLC Agent Team — 7 ról + orkiestrator + pętle skilli
 
-Zespół SDLC jako pliki `.md` do zaimportowania do Claude Code (i przenośnie do
-Codex). Każdy agent ma **własną pętlę skilla** — wewnętrzny cykl przebiegów z
-samokrytyką i kryteriami wyjścia. Nad nimi orkiestrator z pętlą zwrotną.
+Zespół SDLC do użycia w Claude Code, Codex i Devin. Kanoniczne role oraz skille
+są w `.claude/`, a `.codex/` i `.devin/` zawierają natywne profile lub lekkie
+odnośniki. Każdy agent ma **własną pętlę skilla** — wewnętrzny cykl przebiegów z
+samokrytyką i kryteriami wyjścia. Nad nimi działa orkiestrator z pętlą zwrotną.
 
 ```
 analysis -> design -> implementation -> testing -> review -> done
@@ -14,7 +15,9 @@ analysis -> design -> implementation -> testing -> review -> done
 
 ```
 .claude/
-  agents/                      <- 5 ról, spawnowane jako subagenci
+  agents/                      <- 7 kanonicznych definicji ról
+    metrics-analyst.md
+    parallel-tester.md
     sdlc-analyst.md
     sdlc-architect.md
     sdlc-developer.md
@@ -23,6 +26,8 @@ analysis -> design -> implementation -> testing -> review -> done
   skills/
     sdlc-protocol/             <- wspólny kontrakt (stan, findings, routing)
     sdlc-orchestrator/         <- manager, /sdlc-orchestrator
+    sdlc-metrics-loop/         <- opcjonalne definicje metryk
+    sdlc-adversarial-loop/     <- opcjonalny drugi tor testów
     sdlc-analyst-loop/            <- 4 przebiegi
     sdlc-architect-loop/          <- 5 przebiegów
     sdlc-developer-loop/          <- 6 przebiegów
@@ -30,7 +35,12 @@ analysis -> design -> implementation -> testing -> review -> done
     sdlc-reviewer-loop/           <- 5 przebiegów
       SKILL.md + evals.json       <- każdy skill ma własne evals
 evals/activation.json          <- trigger-rate suite dla całej rodziny
-AGENTS.md                      <- wersja pod Codex / bez subagentów
+.codex/
+  config.toml                  <- multi-agent + jawna rejestracja skilli
+  agents/*.toml                <- 7 projektowych custom agents
+  skills/*/SKILL.md            <- odnośniki do kanonicznych skilli
+.devin/                        <- profile i odnośniki dla Devin
+AGENTS.md                      <- instrukcje orkiestracji dla Codex
 ```
 
 ## Evals
@@ -53,7 +63,8 @@ trafień i zero false-fire na sześciu zapytaniach o zwykłą robotę.
 ```bash
 cp -r sdlc-agents/.claude/agents/*        <projekt>/.claude/agents/
 cp -r sdlc-agents/.claude/skills/sdlc-*   <projekt>/.claude/skills/
-cp    sdlc-agents/AGENTS.md               <projekt>/          # tylko dla Codex
+cp -r sdlc-agents/.codex                   <projekt>/          # Codex
+cp    sdlc-agents/AGENTS.md                <projekt>/          # Codex
 ```
 
 **Globalnie** (wszystkie projekty): to samo do `~/.claude/agents/` i
@@ -69,12 +80,22 @@ było przetestowane, jest jedynym dowodem.
 `evals/` zostaje w tym repo, nie kopiuj go do projektu docelowego — dotyczy
 samych skilli, nie kodu, który nimi budujesz.
 
-Weryfikacja: `/agents` pokazuje 5 ról `sdlc-*`, `/skills` pokazuje 7 skilli.
+Weryfikacja w Codex: profile w `.codex/agents/` obejmują 7 ról, a `/skills`
+pokazuje 9 skilli `sdlc-*`. Projekt musi być oznaczony jako zaufany, aby Codex
+załadował projektowy `.codex/config.toml`.
 
 ## Uruchomienie
 
-```
+Claude Code:
+
+```text
 /sdlc-orchestrator zaimplementuj kalkulator RPN z jednym wejściem evaluate(expr)
+```
+
+Codex:
+
+```text
+$sdlc-orchestrator zaimplementuj kalkulator RPN z jednym wejściem evaluate(expr)
 ```
 
 Orkiestrator zakłada `.sdlc/`, odpala fazy po kolei jako subagentów, zbiera
@@ -143,9 +164,12 @@ Findings nigdy się nie kasuje — przepisuje na `"resolved": true` z polem
   zbiega, root cause jest źle zaadresowany.
 - Orkiestrator nie robi żadnej fazy sam — to niszczy niezależność ocen.
 
-## Codex / bez subagentów
+## Codex
 
-`AGENTS.md` — jak symulować izolację ról, gdy runtime nie ma subagentów.
+Codex korzysta natywnie z custom agents w `.codex/agents/`. Fazy uruchamia
+sekwencyjnie, z wyjątkiem dwóch niezależnych testerów uruchamianych równolegle.
+Tryb bez subagentów pozostaje wyłącznie fallbackiem dla hostów, które faktycznie
+nie udostępniają delegowania.
 
 ## Referencyjna implementacja
 
